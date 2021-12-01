@@ -6,14 +6,9 @@
 // @author          Iron-Wolf (https://github.com/Iron-Wolf)
 // @supportURL      https://github.com/Iron-Wolf/Userscripts/issues
 // @license         MIT
-// @match           http*://mantis.cnc.fr/*
+// @include         http*://mantis.cnc.fr/*
 // @grant           none
 // @run-at          document-end
-// @compatible      chrome Chrome + Tampermonkey or Violentmonkey
-// @compatible      firefox Firefox + Greasemonkey or Tampermonkey or Violentmonkey
-// @compatible      opera Opera + Tampermonkey or Violentmonkey
-// @compatible      edge Edge + Tampermonkey or Violentmonkey
-// @compatible      safari Safari + Tampermonkey or Violentmonkey
 // ==/UserScript==
 
 
