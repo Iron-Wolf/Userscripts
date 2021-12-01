@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         Custom Mantis
-// @version      1.0.0
+// @version      2.0.0
 // @description  Customize mantis dashboard
-// @author       abcd
+// @author       Iron-Wolf (https://github.com/Iron-Wolf)
+// @supportURL   https://github.com/Iron-Wolf/Userscripts/issues
 // @license      MIT
 // @include      http*://mantis.cnc.fr/*
-// @updateUrl    https://openuserjs.org/meta/abcd/Custom_Mantis.meta.js
+// @updateUrl    https://raw.githubusercontent.com/Iron-Wolf/Userscripts/master/custom_mantis.js
 // @grant        none
+// @compatible   Tampermonkey
 // ==/UserScript==
 
 
