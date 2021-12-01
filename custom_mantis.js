@@ -8,7 +8,11 @@
 // @include      http*://mantis.cnc.fr/*
 // @updateUrl    https://raw.githubusercontent.com/Iron-Wolf/Userscripts/master/custom_mantis.js
 // @grant        none
-// @compatible   Tampermonkey
+// @compatible   chrome Chrome + Tampermonkey or Violentmonkey
+// @compatible   firefox Firefox + Greasemonkey or Tampermonkey or Violentmonkey
+// @compatible   opera Opera + Tampermonkey or Violentmonkey
+// @compatible   edge Edge + Tampermonkey or Violentmonkey
+// @compatible   safari Safari + Tampermonkey or Violentmonkey
 // ==/UserScript==
 
 
