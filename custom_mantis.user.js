@@ -2,7 +2,6 @@
 // @name            Custom Mantis
 // @version         2.0.0
 // @description     Customize mantis dashboard
-// @description:fr  Customise l'interface mantis. Inclus un moteur de filtrage et de coloration syntaxique fait maison.
 // @author          Iron-Wolf (https://github.com/Iron-Wolf)
 // @supportURL      https://github.com/Iron-Wolf/Userscripts/issues
 // @license         MIT
