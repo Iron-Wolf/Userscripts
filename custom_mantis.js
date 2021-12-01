@@ -1,18 +1,18 @@
 // ==UserScript==
-// @name         Custom Mantis
-// @version      2.0.0
-// @description  Customize mantis dashboard
-// @author       Iron-Wolf (https://github.com/Iron-Wolf)
-// @supportURL   https://github.com/Iron-Wolf/Userscripts/issues
-// @license      MIT
-// @include      http*://mantis.cnc.fr/*
-// @updateUrl    https://raw.githubusercontent.com/Iron-Wolf/Userscripts/master/custom_mantis.js
-// @grant        none
-// @compatible   chrome Chrome + Tampermonkey or Violentmonkey
-// @compatible   firefox Firefox + Greasemonkey or Tampermonkey or Violentmonkey
-// @compatible   opera Opera + Tampermonkey or Violentmonkey
-// @compatible   edge Edge + Tampermonkey or Violentmonkey
-// @compatible   safari Safari + Tampermonkey or Violentmonkey
+// @name            Custom Mantis
+// @version         2.0.0
+// @description     Customize mantis dashboard
+// @description:fr  Regardez des vidéos YouTube avec des restrictions d'âge sans vous inscrire et sans confirmer votre âge :)
+// @author          Iron-Wolf (https://github.com/Iron-Wolf)
+// @supportURL      https://github.com/Iron-Wolf/Userscripts/issues
+// @license         MIT
+// @match           http*://mantis.cnc.fr/*
+// @grant           none
+// @compatible      chrome Chrome + Tampermonkey or Violentmonkey
+// @compatible      firefox Firefox + Greasemonkey or Tampermonkey or Violentmonkey
+// @compatible      opera Opera + Tampermonkey or Violentmonkey
+// @compatible      edge Edge + Tampermonkey or Violentmonkey
+// @compatible      safari Safari + Tampermonkey or Violentmonkey
 // ==/UserScript==
 
 
