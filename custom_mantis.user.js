@@ -8,6 +8,7 @@
 // @supportURL      https://github.com/Iron-Wolf/Userscripts/issues
 // @license         MIT
 // @include         http*://mantis.cnc.fr/*
+// @icon            https://mantisbt.org/favicon.ico
 // @grant           none
 // @run-at          document-end
 // ==/UserScript==
