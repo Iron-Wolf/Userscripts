@@ -38,7 +38,6 @@ function main() {
     var tableColumn = document.querySelectorAll("table#buglist > thead > tr > th");
     var tableRows = document.querySelectorAll("table#buglist > tbody > tr");
 
-    console.log("eee");
     /* === delete row from the table === */
     for (const stringColRow of removeStringColRow) {
         var colTitle = stringColRow[0];
