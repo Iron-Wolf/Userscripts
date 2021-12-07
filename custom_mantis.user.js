@@ -73,7 +73,6 @@ function main() {
 
 /* ~~~ METHODS ~~~ */
 function configStatusColumn(rowList, match, colIndex, callback) {
-    var itemToCallBack;
 
     for (const rowItem of rowList) {
         if (colIndex === null) {
@@ -82,7 +81,11 @@ function configStatusColumn(rowList, match, colIndex, callback) {
                 typeof rowItem.innerHTML !== typeof undefined &&
                 rowItem.innerHTML.includes(match))
             {
-                itemToCallBack = rowItem;
+                // the element is found, we execute the callback
+                if (rowItem !== undefined &&
+                    callback !== null && isFunction(callback)) {
+                    callback(rowItem);
+                }
             }
         }
         else {
@@ -101,16 +104,16 @@ function configStatusColumn(rowList, match, colIndex, callback) {
                 typeof elem.innerHTML !== typeof undefined &&
                 elem.innerHTML.includes(match))
             {
-                itemToCallBack = rowItem;
+                // the element is found, we execute the callback
+                if (rowItem !== undefined &&
+                    callback !== null && isFunction(callback)) {
+                    callback(rowItem);
+                }
             }
         }
     }
 
-    if (itemToCallBack !== undefined &&
-        callback!== null && isFunction(callback)) {
-        // the element is found, we execute the callback
-        callback(itemToCallBack);
-    }
+
 }
 
 // see test perf here : https://jsperf.com/alternative-isfunction-implementations
