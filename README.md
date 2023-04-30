@@ -1,5 +1,5 @@
 # Welcome
-![dependencies][img-dep] [![language][img-lang]][link-vjs]
+![dependencies][badge-dep] [![language][badge-lang]][link-vjs]
 
 Collection of small UserScript for desperate people (including me) who use somewhat crappy web applications.  
 Thoses are __self contained__ script with as __few dependencies__ as possible (goal is zero for each script).
@@ -19,11 +19,13 @@ They are quite small thought, so you will be able to easily customize them (if n
 
 ## Installation
 Click on what you want (whateverMonkey should detect the script automagicaly) :
-- [Custom Mantis](https://github.com/Iron-Wolf/Userscripts/raw/master/custom_mantis.user.js)
-- [Jira Commentary Remover](https://github.com/Iron-Wolf/Userscripts/raw/master/jira_commentary_remover.user.js)
+- [Custom Mantis](https://github.com/Iron-Wolf/Userscripts/raw/master/custom_mantis.user.js) ![][badge-maintained-no]
+- [Jira Commentary Remover](https://github.com/Iron-Wolf/Userscripts/raw/master/jira_commentary_remover.user.js) ![][badge-maintained-yes]
 
 
 
-[img-dep]: https://img.shields.io/badge/Dependencies-No-brightgreen
-[img-lang]: https://img.shields.io/badge/Languages-Vanilla%20JS-blueviolet
+[badge-dep]: https://img.shields.io/badge/Dependencies-No-brightgreen
+[badge-lang]: https://img.shields.io/badge/Languages-Vanilla%20JS-blueviolet
+[badge-maintained-yes]: https://img.shields.io/badge/Maintained-Yes-brightgreen
+[badge-maintained-no]: https://img.shields.io/badge/Maintained-No-red
 [link-vjs]: http://vanilla-js.com/
