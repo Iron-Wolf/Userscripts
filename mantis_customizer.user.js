@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name            Custom Mantis
+// @name            Mantis Customizer
 // @version         2.0.1
 // @description     Customize mantis dashboard
 // @description:fr  Customise l'interface mantis. Inclus un moteur de filtrage et de coloration syntaxique fait maison.
 // @author          Iron-Wolf (https://github.com/Iron-Wolf)
-// @updateUrl       https://github.com/Iron-Wolf/Userscripts/raw/master/custom_mantis.user.js
+// @updateUrl       https://github.com/Iron-Wolf/Userscripts/raw/master/mantis_customizer.user.js
 // @supportURL      https://github.com/Iron-Wolf/Userscripts/issues
 // @license         MIT
 // @include         http*://mantis.cnc.fr/*
