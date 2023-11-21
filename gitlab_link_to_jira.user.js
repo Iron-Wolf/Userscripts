@@ -30,7 +30,7 @@ const REGEX_JIRA_ID = /\[MEL-\d{4}\]/;
             console.log(jiraId);
             const jiraLink = JIRA_BASE_URL + jiraId;
 
-            var newHtml = item.innerHTML.replace(regex, `<a href="${jiraLink}" style="background: cyan;">${jiraIdArray[0]}</a>`);
+            var newHtml = item.innerHTML.replace(REGEX_JIRA_ID, `<a href="${jiraLink}" style="background: cyan;">${jiraIdArray[0]}</a>`);
             item.innerHTML = newHtml;
         }
     });
