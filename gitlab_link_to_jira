@@ -1,0 +1,34 @@
+// ==UserScript==
+// @name            Jira - Gitlab
+// @version         1.0.0
+// @description
+// @description:fr
+// @author          Iron-Wolf (https://github.com/Iron-Wolf)
+// @license         MIT
+// @include         http*://gitlab.pic.services.prod/*
+// @grant           none
+// ==/UserScript==
+
+(function() {
+    // mr list
+    var mrRows = document.querySelectorAll("div.merge-request-title a");
+    // mr page
+    if (mrRows.length == 0) {
+        mrRows = document.querySelectorAll("h1.title");
+    }
+
+    mrRows.forEach(function(item) {
+        const regex = /\[MEL-\d{4}\]/;
+
+        const jiraIdArray = item.innerHTML.match(regex);
+        if (jiraIdArray != null) {
+            // get the first match and remove the brackets (to use it in the href)
+            const jiraId = jiraIdArray[0].replace(/\[|\]/g, "");
+            console.log(jiraId);
+            const jiraLink = "https://jira.private.sfr.com/browse/" + jiraId;
+
+            var newHtml = item.innerHTML.replace(regex, `<a href="${jiraLink}" style="background: cyan;">${jiraIdArray[0]}</a>`);
+            item.innerHTML = newHtml;
+        }
+    });
+})();
