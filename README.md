@@ -20,6 +20,7 @@ They are quite small thought, so you will be able to easily customize them (if n
 ## Installation
 Click on what you want (whateverMonkey should detect the script automagicaly) :
 - ![][badge-maintained-no] [Allocine Date Selector](https://github.com/Iron-Wolf/Userscripts/raw/master/allocine_date_selector.user.js)
+- ![][badge-maintained-yes] [Better Omnis Bibliotheca](https://github.com/Iron-Wolf/Userscripts/raw/master/better-omnis-bibliotheca.user.js)
 - ![][badge-maintained-yes] [Jira-Gitlab link](https://github.com/Iron-Wolf/Userscripts/raw/refs/heads/master/gitlab_link_to_jira.user.js)
 - ![][badge-maintained-yes] [Jira Commentary Remover](https://github.com/Iron-Wolf/Userscripts/raw/master/jira_commentary_remover.user.js)
 - ![][badge-maintained-yes] [Jira Stylizer](https://github.com/Iron-Wolf/Userscripts/raw/refs/heads/master/jira_stylizer.user.js)
