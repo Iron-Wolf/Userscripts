@@ -11,8 +11,13 @@
     // ---------------------
     //  tag-specific styles
     // ---------------------
+    // base background for everyone
     var divContent = document.querySelector("#content");
-    divContent.style.setProperty('background', '#f2f2f2', 'important'); // everyone's background
+    divContent.style.setProperty('background', '#c1c1c1', 'important');
+
+    // background for Aeldari : https://omnis-bibliotheca.com/index.php/Panth%C3%A9on_Aeldari
+    var divMwContent = document.getElementById("mw-content-text");
+    divMwContent.style.setProperty('background', '#c1c1c1', 'important');
 
     var tableNodes = document.getElementsByTagName("table");
     for (const tab of tableNodes) {
