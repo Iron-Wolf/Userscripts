@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Better Omnis Bibliotheca
-// @version      2025-02-25
+// @version      2025-03-17
 // @description  thème clair OMG ENFIN !!!
 // @match        https://omnis-bibliotheca.com/*
 // @icon         https://omnis-bibliotheca.com/favicon.ico
