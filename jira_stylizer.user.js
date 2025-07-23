@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name            Jira's Supercharged Quantum-Powered Stylizer of Doom
-// @version         1.1.1
+// @version         1.2.1
 // @description     Bring your Jira experience to new levels and boost your productivity
 // @description:fr  Jira en tout pareil, mais c'est différent
 // @author          Iron-Wolf (https://github.com/Iron-Wolf)
