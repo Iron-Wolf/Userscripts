@@ -20,30 +20,31 @@ const CONFIG = {
         toReview: 'A revoir',
         resolved: 'Résolue'
     },
-    debug: false
+    debug: false,
+    foilMaxFps: 60,
 };
 
 
 // ===============
 //      STYLES
 // ===============
-var css_wait = `
+const css_wait = `
 .css_wait {
-  position: absolute;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 100px;
-  z-index: 1;
-  opacity: 0.5;
-  rotate: -20deg;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 100px;
+    z-index: 1;
+    opacity: 0.5;
+    rotate: -20deg;
 }`;
 
-var css_rainbow = `
+const css_rainbow = `
 .css_rainbow {
-  background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
-  background-size: 300% 300%;
-  -webkit-animation: rainbow 18s ease infinite !important;
+    background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+    background-size: 300% 300%;
+    -webkit-animation: rainbow 18s ease infinite !important;
 }
 
 @-webkit-keyframes rainbow {
@@ -67,25 +68,53 @@ var css_rainbow = `
     100%{background-position:0% 82%}
 }`;
 
-var css_shake = `
+const css_shake = `
 .css_shake {
-  animation: tilt-n-move-shaking 0.50s infinite !important;
+    animation: tilt-n-move-shaking 1s ease-in-out infinite;
 }
 
 @keyframes tilt-n-move-shaking {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(0, 0) rotate(2deg); }
-  50% { transform: translate(0, 0) rotate(0deg); }
-  75% { transform: translate(0, 0) rotate(-2deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(0, 0) rotate(2deg); }
+    75% { transform: translate(0, 0) rotate(-2deg); }
+    100% { transform: translate(0, 0) rotate(-0.3deg); }
 }`;
 
-var css_hover = `
+const css_hover = `
 .hover-in{
     transition: .3s ease-out;
 }
 .hover-out{
     transition: .3s ease-out;
+}`;
+
+const css_foil = `
+.foil {
+    pointer-events: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(
+        115deg,
+        rgba(255, 0, 255, 0.15),
+        rgba(0, 255, 255, 0.15),
+        rgba(255, 255, 0, 0.15),
+        rgba(0, 255, 127, 0.15),
+        rgba(127, 0, 255, 0.15)
+    );
+    background-size: 400% 400%;
+    animation: foilShift 8s ease-in-out infinite;
+    /*mix-blend-mode: screen;*/
+    opacity: 0.6;
+    z-index: 10;
+    border-radius: inherit;
+    filter: brightness(1.2) contrast(0.8) saturate(2);
+    transition: opacity 0.5s ease;
+}
+
+@keyframes foilShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }`;
 
 
@@ -128,20 +157,21 @@ function wrapAndGetParent(container) {
 //      MAIN
 // ===============
 (function() {
+    // inject CSS in the HEAD, to be accessible any time !
     injectStyles(css_wait,
                  css_rainbow,
                  css_shake,
-                 css_hover);
+                 css_hover,
+                 css_foil);
 
-    // one liner to observe the page, and call the "check" method
+    // observe the page, and call the "check" method
     new MutationObserver(check).observe(document, {childList: true, subtree: true});
 })();
 
 
 function createShine() {
-    // create "shine" effect, used with the 3D movement
-    let shine;
-    shine = document.createElement("div");
+    // create "shine" effect, displayed with the 3D movement
+    let shine = document.createElement("div");
     shine.classList.add("shine");
 
     Object.assign(shine.style, {
@@ -200,6 +230,7 @@ function apply3d(container) {
     }
     container.addEventListener("mouseenter", hoverIn);
 
+    let lastFoilUpdate = 0;
     function hoverMove(e) {
         const rect = inner.getBoundingClientRect();
         const w = inner.offsetWidth;
@@ -226,19 +257,37 @@ function apply3d(container) {
             // start with a strong white opacity
             const startOpacity = (offsetY / h) * 0.9;
             // end with a light gray opacity (make the effect more visible on white backgrounds)
-            const endOpacity = 0.1
+            let endOpacity = 0.1;
+            const foilDiv = container.querySelector(".foil");
+            if (foilDiv) {
+                // cancel the opacity, to not interact with the "foil" effect
+                endOpacity = 0;
+            }
             // create the effect with a 0% to 80% gradient
             shine.style.background = `linear-gradient(${angle}deg,
                                       rgba(255,255,255,${startOpacity}) 0%,
                                       rgba(010,010,010,${endOpacity}) 80%)`;
         }
+
+        // don't update the effect for each pixel !
+        const now = Date.now();
+        if (now - lastFoilUpdate > CONFIG.foilMaxFps) {
+            updateFoilHoverMove(container, e);
+            lastFoilUpdate = now;
+        }
     }
     container.addEventListener("mousemove", hoverMove);
 
     function hoverOut() {
-        // remove the effect
+        // TODO : use the same detection logic for "foil" and "shine"
         if (settings.shine) {
+            // remove the effect
             inner.removeChild(shine);
+        }
+        const foilDiv = container.querySelector(".foil");
+        if (foilDiv) {
+            // remove the overriding effect
+            foilDiv.style.removeProperty("background");
         }
 
         // reset positions
@@ -252,13 +301,49 @@ function apply3d(container) {
     container.addEventListener("mouseleave", hoverOut);
 }
 
+// add the "foil" effect on the container
+function applyFoilEffect(container) {
+    if (container.querySelector('.foil')) return;
 
+    const foil = document.createElement('div');
+    foil.classList.add('foil');
+    container.style.position = 'relative';
+    container.appendChild(foil);
+}
+
+// update effect with mouse interaction
+function updateFoilHoverMove(container, event) {
+    const foilDiv = container.querySelector('.foil');
+    if (!foilDiv) return;
+
+    const rect = container.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const angle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
+
+    // override Background according to mouse movement
+    // (can be removed, to return to the initial state)
+    foilDiv.style.background =
+        `linear-gradient(
+        ${angle}deg,
+        rgba(255, 0, 255, 0.15),
+        rgba(0, 255, 255, 0.15),
+        rgba(255, 255, 0, 0.15),
+        rgba(0, 255, 127, 0.15),
+        rgba(127, 0, 255, 0.15))`;
+}
+
+
+// Entrypoint method to apply ALL the effects
 function addEffects(nodeItem) {
     apply3d(nodeItem);
 
     // Jira Card that have a "Days" component at the bottom
     const regexDays = /(ghx-days-)(\d+)/g;
-    var nodeItemClass = nodeItem.classList;
+    let nodeItemClass = nodeItem.classList;
     nodeItemClass.forEach(function(className) {
         // use "matchAll" to retrieve all groups of the regex
         const numberOfDays = Array.from(className.matchAll(regexDays), m => m[2])[0];
@@ -268,28 +353,31 @@ function addEffects(nodeItem) {
     });
 
     // Jira Card that have extra fields (class = "ghx-extra-field-content")
-    var extraFieldNodeList = nodeItem.querySelectorAll("span.ghx-extra-field-content");
+    let extraFieldNodeList = nodeItem.querySelectorAll("span.ghx-extra-field-content");
     extraFieldNodeList.forEach(function(eNodeItem) {
-        if(eNodeItem.textContent.startsWith("Waiting")) {
+        if(eNodeItem.textContent.startsWith(CONFIG.matchers.waiting)) {
             nodeItem.style.background = "lightgray";
             // check if our DIV is already there (otherwize, it will hug the CPU by creating infinite DOM elements)
             if (nodeItem.querySelectorAll("div.css_wait").length <= 0) {
-                var div = document.createElement("div");
+                let div = document.createElement("div");
                 div.classList.add("css_wait");
                 div.innerHTML = "WAIT";
                 insertChildAtIndex(nodeItem, div, 0);
             }
         }
-        else if(eNodeItem.textContent.startsWith("A revoir")) {
+        else if(eNodeItem.textContent.startsWith(CONFIG.matchers.toReview)) {
             nodeItem.style.background = "lightpink";
         }
-        else if(eNodeItem.textContent.startsWith("Résolue")) {
-            nodeItem.classList.add("css_rainbow");
+        else if(eNodeItem.textContent.startsWith(CONFIG.matchers.resolved)) {
+            //nodeItem.classList.add("css_rainbow");
+            applyFoilEffect(nodeItem);
         }
     });
 }
 
 
+// Method called for each DOM element update. Then call "addEffects()" on all nodes.
+// This requires verification code in other methods, but it allows us to actually catch ALL elements every time.
 function check(changes, observer) {
     //observer.disconnect(); // Panic Button if we want to debug the script
     log("Observer hit");
