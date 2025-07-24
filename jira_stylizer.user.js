@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name            Jira's Supercharged Quantum-Powered Stylizer of Doom
-// @version         1.2.1
+// @version         1.3.0
 // @description     Bring your Jira experience to new levels and boost your productivity
 // @description:fr  Jira en tout pareil, mais c'est différent
 // @author          Iron-Wolf (https://github.com/Iron-Wolf)
@@ -14,14 +14,22 @@
 //      CONFIG
 // ===============
 const CONFIG = {
-    dayThreshold: 100,
-    matchers: {
+    debug: false, // activate debug logs
+    jira: {
+        dayThreshold: 100,
         waiting: 'Waiting',
         toReview: 'A revoir',
-        resolved: 'Résolue'
+        resolved: 'Résolue',
     },
-    debug: false,
-    foilMaxFps: 60,
+    card3d: {
+        perspective: 1000, // control the card's "zoom" when tilting (don't go under 200 untis...)
+        sensitivity: 10, // control the card's rotation when tilting (less will increase the effect)
+        invert: true, // invert tilting effect
+        shine: true, // shine effect that follow the mouse
+    },
+    effect: {
+        maxFps: 60, // refresh rate of the effects (foil, glitter, ...)
+    }
 };
 
 
@@ -88,6 +96,15 @@ const css_hover = `
     transition: .3s ease-out;
 }`;
 
+const css_shine = `
+.shine {
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    transform: translateZ(1px);
+    zIndex: 9;
+    pointerEvents: none;
+}`;
+
 const css_foil = `
 .foil {
     pointer-events: none;
@@ -112,9 +129,32 @@ const css_foil = `
 }
 
 @keyframes foilShift {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% 100% { background-position: 0% 50%; }
+    50%     { background-position: 100% 50%; }
+}`;
+
+const css_gliter = `
+.glitter-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 13;
+    overflow: hidden;
+}
+
+.glitter-dot {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0.4;
+    animation: glitterTwinkle 2s infinite ease-in-out;
+}
+
+@keyframes glitterTwinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50%      { opacity: 0.8; transform: scale(1.5); }
 }`;
 
 
@@ -162,28 +202,18 @@ function wrapAndGetParent(container) {
                  css_rainbow,
                  css_shake,
                  css_hover,
-                 css_foil);
+                 css_shine,
+                 css_foil,
+                 css_gliter);
 
     // observe the page, and call the "check" method
     new MutationObserver(check).observe(document, {childList: true, subtree: true});
 })();
 
-
+// create "shine" effect, displayed with the 3D movement
 function createShine() {
-    // create "shine" effect, displayed with the 3D movement
     let shine = document.createElement("div");
     shine.classList.add("shine");
-
-    Object.assign(shine.style, {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        transform: "translateZ(1px)",
-        zIndex: 9,
-        pointerEvents: "none",
-    });
     return shine;
 }
 
@@ -198,39 +228,31 @@ function apply3d(container) {
     if (container.dataset.hover3dApplied === "true") return;
     container.dataset.hover3dApplied = "true";
 
-    const settings = {
-        perspective: 1000,
-        sensitivity: 10,
-        invert: true,
-        shine: true,
-        hoverInClass: "hover-in",
-        hoverOutClass: "hover-out"
-    };
-
     // small "hack" to add the container inside a root DIV
     const outer = wrapAndGetParent(container);
     const inner = container;
 
     // need carrefull setup to have a true perspective
-    outer.style.perspective = settings.perspective + "px"; // add perspective ONLY to the outer div
+    outer.style.perspective = CONFIG.card3d.perspective + "px"; // add perspective ONLY to the outer div
     inner.style.transformStyle = "preserve-3d";
 
-    // create "shine" effect
-    const shine = createShine()
+    // track the "shine" effect in event methods
+    let shine;
 
     function hoverIn() {
-        if (settings.shine) {
+        if (CONFIG.card3d.shine) {
+            shine = createShine()
             inner.appendChild(shine);
         }
 
-        inner.classList.add(settings.hoverInClass, settings.hoverClass);
+        inner.classList.add("hover-in");
         setTimeout(() => {
-            inner.classList.remove(settings.hoverInClass);
+            inner.classList.remove("hover-in");
         }, 1000);
     }
     container.addEventListener("mouseenter", hoverIn);
 
-    let lastFoilUpdate = 0;
+    let lastFpsUpdate = 0;
     function hoverMove(e) {
         const rect = inner.getBoundingClientRect();
         const w = inner.offsetWidth;
@@ -238,13 +260,13 @@ function apply3d(container) {
         const offsetX = e.clientX - rect.left;
         const offsetY = e.clientY - rect.top;
 
-        const rotateY = settings.invert
-            ? (w / 2 - offsetX) / settings.sensitivity
-            : -(w / 2 - offsetX) / settings.sensitivity;
+        const rotateY = CONFIG.card3d.invert
+            ? (w / 2 - offsetX) / CONFIG.card3d.sensitivity
+            : -(w / 2 - offsetX) / CONFIG.card3d.sensitivity;
 
-        const rotateX = settings.invert
-            ? -(h / 2 - offsetY) / settings.sensitivity
-            : (h / 2 - offsetY) / settings.sensitivity;
+        const rotateX = CONFIG.card3d.invert
+            ? -(h / 2 - offsetY) / CONFIG.card3d.sensitivity
+            : (h / 2 - offsetY) / CONFIG.card3d.sensitivity;
 
         const dx = offsetX - w / 2;
         const dy = offsetY - h / 2;
@@ -253,7 +275,7 @@ function apply3d(container) {
 
         inner.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
 
-        if (shine) {
+        if (CONFIG.card3d.shine) {
             // start with a strong white opacity
             const startOpacity = (offsetY / h) * 0.9;
             // end with a light gray opacity (make the effect more visible on white backgrounds)
@@ -264,23 +286,25 @@ function apply3d(container) {
                 endOpacity = 0;
             }
             // create the effect with a 0% to 80% gradient
-            shine.style.background = `linear-gradient(${angle}deg,
-                                      rgba(255,255,255,${startOpacity}) 0%,
-                                      rgba(010,010,010,${endOpacity}) 80%)`;
+            shine.style.background =
+                `linear-gradient(${angle}deg,
+                rgba(255,255,255,${startOpacity}) 0%,
+                rgba(010,010,010,${endOpacity}) 80%)`;
         }
 
         // don't update the effect for each pixel !
         const now = Date.now();
-        if (now - lastFoilUpdate > CONFIG.foilMaxFps) {
-            updateFoilHoverMove(container, e);
-            lastFoilUpdate = now;
+        if (now - lastFpsUpdate > CONFIG.effect.maxFps) {
+            updateFoilEffect(container, e);
+            updateGlitterEffect(container, e);
+            lastFpsUpdate = now;
         }
     }
     container.addEventListener("mousemove", hoverMove);
 
     function hoverOut() {
         // TODO : use the same detection logic for "foil" and "shine"
-        if (settings.shine) {
+        if (CONFIG.card3d.shine) {
             // remove the effect
             inner.removeChild(shine);
         }
@@ -293,9 +317,9 @@ function apply3d(container) {
         // reset positions
         inner.style.transform = `rotateX(0deg) rotateY(0deg)`;
 
-        inner.classList.add(settings.hoverOutClass);
+        inner.classList.add("hover-out");
         setTimeout(() => {
-            inner.classList.remove(settings.hoverOutClass);
+            inner.classList.remove("hover-out");
         }, 1000);
     }
     container.addEventListener("mouseleave", hoverOut);
@@ -307,12 +331,11 @@ function applyFoilEffect(container) {
 
     const foil = document.createElement('div');
     foil.classList.add('foil');
-    container.style.position = 'relative';
     container.appendChild(foil);
 }
 
 // update effect with mouse interaction
-function updateFoilHoverMove(container, event) {
+function updateFoilEffect(container, event) {
     const foilDiv = container.querySelector('.foil');
     if (!foilDiv) return;
 
@@ -336,6 +359,40 @@ function updateFoilHoverMove(container, event) {
         rgba(127, 0, 255, 0.15))`;
 }
 
+function applyGlitterEffect(container) {
+  if (container.querySelector('.glitter-layer')) return;
+
+  const glitterLayer = document.createElement('div');
+  glitterLayer.className = 'glitter-layer';
+
+  const numDots = 30;
+  for (let i = 0; i < numDots; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'glitter-dot';
+    dot.style.top = `${Math.random() * 100}%`;
+    dot.style.left = `${Math.random() * 100}%`;
+    dot.style.animationDelay = `${Math.random() * 2}s`;
+    glitterLayer.appendChild(dot);
+  }
+
+  container.appendChild(glitterLayer);
+}
+
+function updateGlitterEffect(container, e) {
+  const glitterLayer = container.querySelector('.glitter-layer');
+  if (!glitterLayer) return;
+
+  const rect = container.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const percentX = x / rect.width;
+  const percentY = y / rect.height;
+
+  const brightness = 0.8 + percentY * 0.6;
+  glitterLayer.style.filter = `brightness(${brightness})`;
+}
+
 
 // Entrypoint method to apply ALL the effects
 function addEffects(nodeItem) {
@@ -347,7 +404,7 @@ function addEffects(nodeItem) {
     nodeItemClass.forEach(function(className) {
         // use "matchAll" to retrieve all groups of the regex
         const numberOfDays = Array.from(className.matchAll(regexDays), m => m[2])[0];
-        if (numberOfDays > CONFIG.dayThreshold){
+        if (numberOfDays > CONFIG.jira.dayThreshold){
             nodeItem.classList.add("css_shake");
         }
     });
@@ -355,7 +412,7 @@ function addEffects(nodeItem) {
     // Jira Card that have extra fields (class = "ghx-extra-field-content")
     let extraFieldNodeList = nodeItem.querySelectorAll("span.ghx-extra-field-content");
     extraFieldNodeList.forEach(function(eNodeItem) {
-        if(eNodeItem.textContent.startsWith(CONFIG.matchers.waiting)) {
+        if(eNodeItem.textContent.startsWith(CONFIG.jira.waiting)) {
             nodeItem.style.background = "lightgray";
             // check if our DIV is already there (otherwize, it will hug the CPU by creating infinite DOM elements)
             if (nodeItem.querySelectorAll("div.css_wait").length <= 0) {
@@ -365,10 +422,11 @@ function addEffects(nodeItem) {
                 insertChildAtIndex(nodeItem, div, 0);
             }
         }
-        else if(eNodeItem.textContent.startsWith(CONFIG.matchers.toReview)) {
+        else if(eNodeItem.textContent.startsWith(CONFIG.jira.toReview)) {
             nodeItem.style.background = "lightpink";
+            applyGlitterEffect(nodeItem);
         }
-        else if(eNodeItem.textContent.startsWith(CONFIG.matchers.resolved)) {
+        else if(eNodeItem.textContent.startsWith(CONFIG.jira.resolved)) {
             //nodeItem.classList.add("css_rainbow");
             applyFoilEffect(nodeItem);
         }
