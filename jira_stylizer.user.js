@@ -89,11 +89,22 @@ const css_shake = `
 }`;
 
 const css_hover = `
-.hover-in{
+.hover-in {
     transition: .3s ease-out;
 }
-.hover-out{
+.hover-out {
     transition: .3s ease-out;
+}
+/* === BUG FIX ===
+Jira has a special behaviour when opening a Card inside the Borad View (when the ticket is displayed on the side).
+It dynamically activates a funky new "@media" rule, instead of applying it from the start !!!
+And, OF COURSE, they use "!important" because it's so much fun to code like a wierdo...
+So... I'm forced to use "!important" too, only in this specific case, to get back my animation for every situation.
+This thing shouldn't even be mandatory if the page didn't rely on such a weird trick...*/
+@media (prefers-reduced-motion: reduce) {
+  .hover-in, .hover-out {
+    transition-duration: .3s !important;
+  }
 }`;
 
 const css_shine = `
